@@ -1,0 +1,75 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="MyStyle.css"> <!-- The style sheet IS referenced (for the non-Highcharts at least). -->
+        <title>MyPage Browser Tab Test</title> <!-- appears in the tab of the browser (tested with Chrome) -->
+		
+		<!-- Now bring in the HighCharts library (javascript) -->
+		<script src="./Highcharts/Highcharts-7.2.1/code/highcharts.js"></script>
+        <!-- This line that references the web does work.  I just wanted to have everything local.
+		<script src="https://code.highcharts.com/highcharts.js"></script>
+		-->
+		
+    </head>
+    <body>
+        <h1>MyPage Body Title</h1> <!-- Appears bang on top left (unless I change the css in future) -->
+        <p>This is a really interesting paragraph.</p> <!-- A piece of HTML for old-times sake. -->
+		
+		<!-- Interestingly the Chrome browser comments out the next lines of php! -->
+		<!-- Probably for security reasons.  Left here for learning. -->
+		<?php
+		echo file_get_contents("MyTextFile.txt");
+		?>
+		
+		<!-- Now locate the place where the chart will go.  ie make a div. -->
+        <div id="MyContainer" style="width:100%; height:400px;"></div>
+		
+		<!-- Work in progress as I try to figure out how to separate the data from the display. -->
+		<!-- Ideally I want to have the data as a downloaded local file (I think). -->
+		<script>
+		// var myData = [5,7,3]; Used the single-line comment syntax.
+		var MyData = [
+			['Jane',[1,0,4]],
+			['John',[5,7,3]]
+			];
+		</script>
+		
+		<!-- Making sure the options array variable is distinct from the code that makes it all happen. -->
+		<!-- For future reference see https://www.highcharts.com/docs/chart-and-series-types/combining-chart-types -->
+		<!-- and in Fiddle: https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/demo/combo/ -->
+        <script>
+		var chartOptions ={
+				// If the whole chart is of one type then put it here:
+				// chart: {type: 'bar'},
+				// chart: {type: 'column'},
+				// chart: {type: 'line'}, // This is the default if none given.
+				// chart: {type: 'spline'},
+				
+				// Other options for the whole chart
+				title: {text: 'Fruit Consumption'},
+				xAxis: {title: {text: 'Fruit'}, categories: ['Apples', 'Bananas', 'Oranges']},
+				yAxis: {title: {text: 'Fruit eaten'}},
+				
+				// The per-series data
+				series: [{
+					type: 'column',
+					name: MyData[0][0],
+					data: MyData[0][1]
+				}, {
+					type: 'column',
+					name: MyData[1][0],
+					data: MyData[1][1]
+				}]
+			}
+		</script>
+
+		<!-- Now interact with HighCharts to get it to take over control of the div with the above data and above options. -->
+        <script>		
+		document.addEventListener('DOMContentLoaded', function () {
+			var myChart = Highcharts.chart('MyContainer', chartOptions);
+		});
+		</script>
+		
+		<!-- And we're done.  But the chart remains interactive; probably due to the "listener" bit. -->
+        
+    </body>
+</html>
