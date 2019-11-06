@@ -25,17 +25,53 @@
 		echo "Hello World!";
 		?>
 		
+		<!-- OK so I want to see if I can get a file from the web server into this paragraph. -->
+		<!-- NB AJAX stands for Asynchronous JavaScript And XML -->
+		<p id="nominatedparagraph">This is where the CSV will go.</p>
+
+		<button type="button" onclick="loadDocFunction()">Change Content</button> <!-- HTML: Call the function below every time the button is clicked. -->
+
+		<script> // Back to Javascript
+			function loadDocFunction() {
+				var xhttp = new XMLHttpRequest(); // Get an AJAX object.
+				// Get ANOTHER function (in-line one) and add it to the listener that is waiting for something to come back from the request that we make later down the page.
+				xhttp.onreadystatechange = function() { 
+					if (this.readyState == 4 && this.status == 200) {
+						// Do only if it *is* ready [4] and the response was completed correctly [200]
+						// And if so we then change the inner HTML of the nominated element.
+						document.getElementById("nominatedparagraph").innerHTML = this.responseText;
+					}
+					else {
+						// Otherwise still change the nominated element but to the error codes.
+						document.getElementById("nominatedparagraph").innerHTML = "" + this.readyState + " " + this.status;
+						// I get a zero (0) because of CORS (Cross Origin Resource Sharing)
+						// This is a security feature.  I am loading this HTML locally on my laptop so my laptop is the domain that
+						// served the page.  But I'm asking for a resource that is from a different domain (the Pi) so it is not allowed.
+					}
+				};
+				// The above function gets called AFTER something happens.  To make something happen we have to create a message:
+				xhttp.open("GET", "http://192.168.1.132:8008/sample.csv", true);
+				// Note that saying "true" makes it asynchronous so that this is a non-blocking call.
+				// Which is why we have to listen for a ready state change to get the reply when it comes.
+				
+				// And then send it.
+				xhttp.send();
+				// NB a "GET" is like a web URL.  IIRC a "POST" will put data in the body of the outgoing message too.
+			}
+		</script>
+
+
+
 		<!-- Now locate the place where the chart will go.  ie make a div. -->
         <div id="MyContainer" style="width:100%; height:400px;"></div>
 		
 		<!-- Work in progress as I try to figure out how to separate the data from the display. -->
 		<!-- Ideally I want to have the data as a downloaded local file (I think). -->
 		<script>
-		// var myData = [5,7,3]; Used the single-line comment syntax.
-		var MyData = [
-			['Jane',[3,1,8]],
-			['John',[5,7,3]]
-			];
+			var MyRowNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday']; // Imagine this as a long list of date times.
+			var MyColumnSeries = [{type: 'column', name: 'Jane', data: [4,3,5,4]}, // Imagine values for this column corresponding to date times.
+								  {type: 'column', name: 'John', data: [7,2,8,6]},
+								  {type: 'line', name: 'Jack', data: [11,1,7,8]}  ];
 		</script>
 		
 		<!-- Making sure the options array variable is distinct from the code that makes it all happen. -->
@@ -51,19 +87,22 @@
 				
 				// Other options for the whole chart
 				title: {text: 'Fruit Consumption'},
-				xAxis: {title: {text: 'Fruit'}, categories: ['Apples', 'Bananas', 'Oranges']},
+				xAxis: {title: {text: 'Fruit'}, categories: MyRowNames},
 				yAxis: {title: {text: 'Fruit eaten'}},
 				
+				series: MyColumnSeries
 				// The per-series data
+				/* eg
 				series: [{
 					type: 'column',
-					name: MyData[0][0],
-					data: MyData[0][1]
+					name: 'Jane,
+					data: [4,5,6]
 				}, {
 					type: 'column',
-					name: MyData[1][0],
-					data: MyData[1][1]
+					name: 'John',
+					data: [1,2,3]
 				}]
+				*/
 			}
 		</script>
 
