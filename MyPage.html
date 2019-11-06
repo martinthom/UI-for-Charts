@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
     <head>
         <link rel="stylesheet" href="MyStyle.css"> <!-- The style sheet IS referenced (for the non-Highcharts at least). -->
@@ -15,9 +16,13 @@
         <p>This is a really interesting paragraph.</p> <!-- A piece of HTML for old-times sake. -->
 		
 		<!-- Interestingly the Chrome browser comments out the next lines of php! -->
-		<!-- Probably for security reasons.  Left here for learning. -->
+		<!-- This is because php is a server-side scripting language and a browser just doesn't know what to do with it! -->
 		<?php
 		echo file_get_contents("MyTextFile.txt");
+		?>
+
+		<?php
+		echo "Hello World!";
 		?>
 		
 		<!-- Now locate the place where the chart will go.  ie make a div. -->
