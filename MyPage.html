@@ -13,8 +13,15 @@
     </head>
     <body>
         <h1>MyPage Body Title</h1> <!-- Appears bang on top left (unless I change the css in future) -->
-        <p>This is a really interesting paragraph.</p> <!-- A piece of HTML for old-times sake. -->
+		<p>This is a really interesting paragraph.</p> <!-- A piece of HTML for old-times sake. -->
+		<p>I want to put a link to the <a href="EventListener.html" title="go to the Event Listerer Page">other page</a>.</p>
 		
+		<!-- OK so I want to see if I can get a file from the web server into this paragraph. -->
+		<!-- NB AJAX stands for Asynchronous JavaScript And XML -->
+		<p id="nominatedparagraph">This is where the CSV will go.</p>
+
+		<button type="button" onclick="loadDocFunction()">Change Content</button> <!-- HTML: Call the function below every time the button is clicked. -->
+
 		<!-- Interestingly the Chrome browser comments out the next lines of php! -->
 		<!-- This is because php is a server-side scripting language and a browser just doesn't know what to do with it! -->
 		<?php
@@ -25,13 +32,7 @@
 		echo "Hello World!";
 		?>
 		
-		<!-- OK so I want to see if I can get a file from the web server into this paragraph. -->
-		<!-- NB AJAX stands for Asynchronous JavaScript And XML -->
-		<p id="nominatedparagraph">This is where the CSV will go.</p>
-
-		<button type="button" onclick="loadDocFunction()">Change Content</button> <!-- HTML: Call the function below every time the button is clicked. -->
-
-		<script> // Back to Javascript
+		<script> // Javascript - Function triggered in response to a push on a button.
 			function loadDocFunction() {
 				var xhttp = new XMLHttpRequest(); // Get an AJAX object.
 				// Get ANOTHER function (in-line one) and add it to the listener that is waiting for something to come back from the request that we make later down the page.

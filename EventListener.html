@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="MyStyle.css"> <!-- The style sheet IS referenced (for the non-Highcharts at least). -->
+        <title>Event Listener</title> <!-- appears in the tab of the browser (tested with Chrome) -->
+    </head>
+    <body>
+        <h1>Tests involving listening to events.</h1> <!-- Appears bang on top left (unless I change the css in future) -->
+        <p>Were you looking for the <a href="MyPage.html" title="go to the Main Page">other page</a>?</p>
+        <p id = "DynamicStatusParagraph">This is a really interesting paragraph.</p> <!-- A piece of HTML for old-times sake. -->
+        <p id = "DynamicClickParagraph">This paragraph will be changed by clicking.</p>
+        <button id = "ActivatingButton" onclick="getElementById('DynamicClickParagraph').innerHTML='I have been changed by a button click.'">Click to do something.</button>
+        <!-- The thing after onclick is implied Javascrip (it seems). -->
+        
+        <!-- First we have some utility script(s) -->
+
+        <!-- Create the ability to pass parameters to event listeners. -->
+        <script>
+            // Very fancy thing from the web. https://stackoverflow.com/questions/256754/how-to-pass-arguments-to-addeventlistener-listener-function/54731362#54731362
+            function addListenerWithArguments(htmlElement, eventBeingListenedTo, functionToBeCalled, passedArgument){
+                // Declare fancyFunction as a function that already has a parameter baked into it (yes, clever, keep reading!)
+                var fancyFunction = function(functionObject, parameterForFunction){ // outer anonymous function
+                        return (
+                            function (){functionObject(parameterForFunction);} // This is an anonymous function declaration too.
+                        );
+                }(functionToBeCalled, passedArgument);
+                // I believe these last lines (the parentheses) make the outer anonymous function be called immediately; which then means
+                // that fancyFunction actually becomes the returned (inner anonymous) function from the calling of the outer one!!
+
+                // So in the next line, which expects a function, the function it gets will be the inner function that, itslef, is
+                // a function that has aleady got the parameter baked in.
+                htmlElement.addEventListener(eventBeingListenedTo, fancyFunction);
+            
+                return fancyFunction; // So that it will be possible in future to remove the event listener if required.
+            }
+        </script>
+
+
+        <!-- Generic function that reacts to the listener(s). -->
+        <script>
+            // Function to change the content of certain other elements.
+            // NOTE - I've used fresh <script> tags for the place were I add the listener.
+            // Because of that it means the listener must come AFTER the <script> where the funciton in defined other wise it is undefined.
+            // However if I had put the listener in the same <script> block then the compiler sorts out the order and the reference.
+            function myReaction(triggerReason) {
+                var myRefToTheParagraph = document.getElementById("DynamicStatusParagraph"); // So I've got an element.
+                myRefToTheParagraph.innerHTML = triggerReason;
+            }
+        </script>
+    
+
+        <!-- Selecting what to listen out fort. -->
+        <script>
+            storedForLaterListenerRemoval = addListenerWithArguments(document.getElementById("ActivatingButton"),"mouseover",myReaction,"There has been a mouse over.");
+            // To remove the listener, use the normal routine:
+            // theElememtTheListenerWasAttachedTo.removeEventListener("particular listend to action", storedForLaterListenerRemoval);
+            // Partner piece for the code above.  Same link: https://stackoverflow.com/questions/256754/how-to-pass-arguments-to-addeventlistener-listener-function/54731362#54731362
+        </script>
+
+    </body>
+</html>
