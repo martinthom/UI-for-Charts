@@ -2,3 +2,111 @@ body {
     background-color: white;
     color: blue;
 }
+
+/* Now here's something fancy from the internet: https://dev.to/webdeasy/top-20-css-buttons-animations-f41 */
+
+/* Start by setting some basics for the element we are dealing with. */
+/* These override whatever was there before for the element in the 'basic' HTML. */
+/* So since this was a button, we go from a rather dull grey square thing to a more styled thing. */
+.fancyButton {
+    width: 220px;
+    height: 50px;
+    border: none;
+    outline: none;
+    color: #fff; /* White text. */
+    background: #c11;
+    /* Although background gets overwritten by 'after' we have to remember that there is an edge case where the button is pressed down */
+    /* but the mouse moves to no longer be 'hover' over the button and so the 'after' will still be transparent revealing this styling. */
+    cursor: pointer;
+    position: relative;
+    z-index: 0;
+    border-radius: 10px;
+}
+
+.fancyButton:active { /* I believe this is a pseudo-class (as opposed to a pseudo element). see https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-elements#:~:targetText=A%20CSS%20pseudo%2Delement%20is,first%20line%20of%20a%20paragraph.&targetText=Note%3A%20In%20contrast%20to%20pseudo,element%20based%20on%20its%20state. */
+    /* So, whether or not we are being hovered over, this is active when the button is in its clicked state. */
+    /* CLASSES STYLE AN ELEMENT BASED ON ITS STATE */
+    /* 'color' is just the text, not the background. */
+    /* Remember too that we are talking about the real main element here not the 'before' or 'after' child pseudo elements. */
+    color: #000 /* Text colour to black whilst the button is active.*/
+}
+
+/* Now we create a new 'child' pseudo element.  The tag 'before' means that everything here will be in play before the HTML content of the object we are styling is looked at. */
+/* The 'before' element is the one with all the fancy colours. */
+/* It doesn't change any previous element.  It is a new pseudo element. */
+.fancyButton:before { /* This started as single colon.  It's a non-DOM element so since CSS3 should be double colon. https://dev.to/finallynero/understanding-css-before-and-after-pseudo-elements-ml0 */
+    /* Without content or background this element just isn't there..... */
+    /* You must provide both. */
+    content: ''; /* Seems to be used to pre-fix text to the named element. */  /* Any text is there on the element - but the blurring would obscure it. */
+    /* Required otherwise CSS thinks there's nothing to show (or something). https://cssanimation.rocks/pseudo-elements/ */
+    /* So now we need some background for our empty content on this new child element. */
+    background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+    /* 'linear-gradient' is a CSS function.  It parses many options to create blocks of colour(s) smoothly transforming from one colour to another. */
+    /* We defined the background from a linear gradient above.  This makes it 4x bigger than the space it needed to be. */
+    background-size: 400%;
+    position: absolute;
+    /* So, now make a box that is 2 pixels bigger all round. The +4 is because we have to add the 2 belonging to the move left and up too. */
+    /* Although 'absolute' this is an inner element of 'fancyButton' styleing above and so is absolute in terms of where that element is. */
+    top: -2px;
+    left:-2px;
+    width: calc(100% + 4px);
+    height: calc(100% + 4px);
+    border-radius: 10px; /* Was 10 */
+    /* 'z' is the third dimension.  The '-1' makes the background element go behind the parent element. */
+    /* Having this as -1 is a bit misleading.  Should really be -2 IMHO to contrast with the -1 of the 'after'. */
+    z-index: -2;
+    /* 'blur' is another function.  It seems to average together the given number of pixels over the whole image. */
+    filter: blur(5px);
+    /* This is a collected set of instructions.  animation_function, duration, time_style and repeat options.*/
+    animation: glowing 20s linear infinite;
+    /*  The animation is actually happening all the time.  We just can see anything because the opacity is set to zero.  See below for that changing to 1. */
+    opacity: 0;
+    /* It looks like, if any element is changed, then we can use 'transition' to force how that change takes place. */
+    transition: opacity .3s ease-in-out; /* So we are attaching this transition style to the opacity property. */
+}
+
+/* This is the description of what happens in the animation and when. */
+/* Looks like here we are just changing one parameter.  And half way through we turn and come back to normal.*/
+/* How long this takes and how the transition is style and if it repeats are recorded in the definition of the pseudo element. */
+@keyframes glowing {
+    0% { background-position: 0 0; }
+    50% { background-position: 400% 0; }
+    100% { background-position: 0 0; }
+}
+
+/* I read this wrong before.  These are the values to immediately go to when the sub element named 'before' is affected by the action hover.*/
+/* The fact that the changes don't take place immediately is thanks to the transition limits put into the sub element itself. */
+.fancyButton:hover:before {
+    opacity: 1; /* So, basically, we want this element to become visible. */
+}
+
+
+/* Now we create a new 'child' pseudo element.  The tag 'after' means that it is rendered after the on-page HTML styling (and after the 'before' of course). */
+/* Here we use it to make an element that sits on top of the fancy colours.  One that can be made transparent to reveal the rainbow during a click. */
+/* So it's job here is to sit on top of the rainbow until a click happens. */
+/* It doesn't change any previous element.  It is a new pseudo element. */
+/* It has been styled to be like the styling at the top of the page. */
+.fancyButton:after {
+    /* Without content or background this element just isn't there..... */
+    /* You must provide both. */
+    content: '';
+    background: #111;
+    /* This is sitting at the same 'z' depth as the fancy rainbow.*/
+    z-index: -1;
+    /* But I think because 'after' comes after 'before' then this will be on top. */
+    /* CONFIRMED - I made this -2 and it stayed behind the fancy colours. */
+    position: absolute;
+    /* Since this is a child it will inherit the sizing at the top for the main elelemnt. */
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    border-radius: 10px;
+}
+
+
+/* OK so we want to adjust the 'after' pseudo element when the button is pressed. */
+/* And basically we reveal the rest of the rainbow. */
+.fancyButton:active:after {
+    background: transparent;
+}

@@ -51,11 +51,13 @@
         <h2>Clicking a button that makes changes (even to the button itself!).</h2>
         <p id = "DynamicClickParagraph">This paragraph will be changed by clicking.</p>
         <br>
-        <button id = "ActivatingButton" onclick="getElementById('DynamicClickParagraph').innerHTML='I have been changed by a button click.'">Click to do something.</button>
+        <button class = "notfancyButton" id = "ActivatingButton" onclick="getElementById('DynamicClickParagraph').innerHTML='I have been changed by a button click.'">Click to do something.</button>
         <!-- The thing after onclick is implied Javascrip (it seems). -->
+        <p>This is an unstyled button.</p>
         <br><br>
-        <button id = "OtherActivatingButton" onclick="myButtonFunctionOne()">Make it say 'poop'.</button>
+        <button class = "fancyButton" id = "OtherActivatingButton" onclick="myButtonFunctionOne()">Make it say 'poop'.</button>
         <!-- On this second button the onclick makes direct reference to a JavaScript function. -->
+        <p>This is a styled button.  Can you tell?</p>
     
         <!-- HTML end end -->
         <!-- HTML end end -->
