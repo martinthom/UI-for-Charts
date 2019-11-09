@@ -5,36 +5,55 @@
         <title>Event Listener</title> <!-- appears in the tab of the browser (tested with Chrome) -->
     </head>
     <body>
+        <!-- HTML HTML HTML -->
+        <!-- HTML HTML HTML -->
+        <!-- HTML HTML HTML -->
         <!-- It seems to me good practice to keep all the HTML elements together and away from the fancy JavaScript. -->
         <!-- So I've got them up here first. -->
+        <!-- MAKE NO ATTEMPT TO STYLE THINGS beyond simple new lines (breaks) headings and pragraphs. -->
         <h1>Tests involving listening to events.</h1> <!-- Appears bang on top left (unless I change the css in future) -->
         <p>Were you looking for the <a href="MyPage.html" title="go to the Main Page">other page</a>?</p>
-        <p id = "DynamicStatusParagraph">This is a really interesting paragraph.</p> <!-- A piece of HTML for old-times sake. -->
+        <h2>Updating Paragraphs</h2>
+        <p>This is a paragraph part of which will update.  The status: <span id = "DynamicStatusParagraph">This text will change.</span></p>
+        <div id = "AreaOfInterest">
+            <h3>Heading 3 text that has been placed in a div.</h3>
+            <p> Where it has been followed by a paragraph.<br><br>
+                <!-- The metric names incorporate the actual trigger name. -->
+                Mouse Over <span id = metricmouseover>(waiting)</span> <br>
+                Mouse Down <span id = metricmousedown>(waiting)</span> <br>
+                Mouse Up <span id = metricmouseup>(waiting)</span> <br>
+                Mouse Enter <span id = metricmouseenter>(waiting)</span> <br>
+                Mouse Leave <span id = metricmouseleave>(waiting)</span> <br>
+                Mouse Move <span id = metricmousemove>(waiting)</span> <br>
+            </p>
+        </div>
+        <p>Mouse Over will trigger on every element it finds within the element that it's
+            watching, so that includes the children.  Whereas Mouse Enter and Leave only deal with the parent element.</p>
+        <br>
+        <h2>Clicking a button that makes changes (even to the button itself!).</h2>
         <p id = "DynamicClickParagraph">This paragraph will be changed by clicking.</p>
+        <br>
         <button id = "ActivatingButton" onclick="getElementById('DynamicClickParagraph').innerHTML='I have been changed by a button click.'">Click to do something.</button>
         <!-- The thing after onclick is implied Javascrip (it seems). -->
-        <br>
+        <br><br>
         <button id = "OtherActivatingButton" onclick="myButtonFunctionOne()">Make it say 'poop'.</button>
         <!-- On this second button the onclick makes direct reference to a JavaScript function. -->
-        <br>
-        <div>
-            <h3>Heading 3 text that has been placed in a div.</h3>
-        </div>
-
-
-
+    
+        <!-- HTML end end -->
+        <!-- HTML end end -->
+        <!-- HTML end end -->
 
         <!-- Local override to the loaded CSS. -->
         <style>
             div {
-                width: 150px;
-                height: 100px;
+                width: 200px;
+                height: 100%;
                 border: 1px solid black;
                 margin: 10px;
-                float: left;
                 padding: 30px;
+                float: left;
                 text-align: center;
-                background-color: lightgray;
+                background-color: lightgoldenrodyellow;
             }
             h3 {
                 background-color: white;
@@ -44,16 +63,33 @@
 
         <!-- First we have some utility script(s) -->
 
+        <!-- Specific Functions for the second button.  I get this button to toggle what text is shows and what function it calls. -->
+        <script>
+                //??
+                function myButtonFunctionOne() { // No parameters allowed without getting fancy (See other examples in this file).
+                    document.getElementById("DynamicClickParagraph").innerHTML = "Poop"; // A direct change.  No need to assign to a variable.
+                    document.getElementById("OtherActivatingButton").setAttribute( "onClick", "javascript: myButtonFunctionTwo();" );
+                    document.getElementById("OtherActivatingButton").innerHTML = "Make it say 'AAArg!'";
+                    // Note that it seems some elements use 'innerHTML' and some use 'value'.  'value' is for "input elemens and form things"?? (inner for the usual paragraphs etc)
+                }
+                function myButtonFunctionTwo() { // No parameters allowed without getting fancy (See other examples in this file).
+                    document.getElementById("DynamicClickParagraph").innerHTML = "AAArg!"; // A direct change.  No need to assign to a variable.
+                    document.getElementById("OtherActivatingButton").setAttribute( "onClick", "javascript: myButtonFunctionOne();" );
+                    document.getElementById("OtherActivatingButton").innerHTML = "Make it say 'poop'.";
+                }
+            </script>
+        
+
         <!-- Create the ability to pass parameters to event listeners. -->
         <script>
             // Very fancy thing from the web. https://stackoverflow.com/questions/256754/how-to-pass-arguments-to-addeventlistener-listener-function/54731362#54731362
             function addListenerWithArguments(htmlElement, eventBeingListenedTo, functionToBeCalled, passedArgument){
                 // Declare fancyFunction as a function that already has a parameter baked into it (yes, clever, keep reading!)
-                var fancyFunction = function(functionObject, parameterForFunction){ // outer anonymous function
+                var fancyFunction = function(functionObject, eventBeingListenedTo, parameterForFunction){ // outer anonymous function
                         return (
-                            function (){functionObject(parameterForFunction);} // This is an anonymous function declaration too.
+                            function (){functionObject(eventBeingListenedTo, parameterForFunction);} // This is an anonymous function declaration too.
                         );
-                }(functionToBeCalled, passedArgument);
+                }(functionToBeCalled, eventBeingListenedTo, passedArgument);
                 // I believe these last lines (the parentheses) make the outer anonymous function be called immediately; which then means
                 // that fancyFunction actually becomes the returned (inner anonymous) function from the calling of the outer one!!
 
@@ -65,47 +101,40 @@
             }
         </script>
 
-        <!-- Specific Functions for the second button.  I get this button to toggle what text is shows and what function it calls. -->
-        <script>
-            //??
-            function myButtonFunctionOne() { // No parameters allowed without getting fancy (See other examples in this file).
-                document.getElementById("DynamicClickParagraph").innerHTML = "Poop"; // A direct change.  No need to assign to a variable.
-                document.getElementById("OtherActivatingButton").setAttribute( "onClick", "javascript: myButtonFunctionTwo();" );
-                document.getElementById("OtherActivatingButton").innerHTML = "Make it say 'AAArg!'";
-                // Note that it seems some elements use 'innerHTML' and some use 'value'.  'value' is for "input elemens and form things"?? (inner for the usual paragraphs etc)
-            }
-            function myButtonFunctionTwo() { // No parameters allowed without getting fancy (See other examples in this file).
-                document.getElementById("DynamicClickParagraph").innerHTML = "AAArg!"; // A direct change.  No need to assign to a variable.
-                document.getElementById("OtherActivatingButton").setAttribute( "onClick", "javascript: myButtonFunctionOne();" );
-                document.getElementById("OtherActivatingButton").innerHTML = "Make it say 'poop'.";
-            }
-        </script>
-    
+
         <!-- Generic function that reacts to the listener(s). -->
         <script>
             // Function to change the content of certain other elements.
             // NOTE - I've used fresh <script> tags for the place were I add the listener.
             // Because of that it means the listener must come AFTER the <script> where the funciton in defined other wise it is undefined.
             // However if I had put the listener in the same <script> block then the compiler sorts out the order and the reference.
-            function myReaction(triggerReason) {
-                var myRefToTheParagraph = document.getElementById("DynamicStatusParagraph"); // So I've got an element.
-                myRefToTheParagraph.innerHTML = triggerReason;
+
+            var myCounters = new Map; // Use the reason for the trigger as the index in a map of counters.
+            function myReaction(triggerReason, triggerWords) {
+                // Put some words down to show what has happened.  Unless it's the Mouse Move which is too dominant.  (It'll still get counted - see elsewhere).
+                triggerReason == "mousemove"? /*nothing*/null:document.getElementById("DynamicStatusParagraph").innerHTML = triggerWords;
+
+                myCounters.has(triggerReason) ? myCounters.set(triggerReason,myCounters.get(triggerReason) + 1): myCounters.set(triggerReason,1);
+                document.getElementById("metric"+triggerReason).innerHTML = myCounters.get(triggerReason);
+
             }
         </script>
     
 
-        <!-- Selecting what to listen out fort. -->
+        <!-- Selecting what to listen out for. -->
         <script>
-            storedForLaterListenerRemoval = addListenerWithArguments(document.getElementById("ActivatingButton"),"mouseover",myReaction,"There has been a mouse over.");
+            var myElementOfInterest = "AreaOfInterest"
+            storedForLaterListenerRemoval = addListenerWithArguments(document.getElementById(myElementOfInterest),"mouseover",myReaction,"There has been a mouse over.");
             // To remove the listener, use the normal routine:
             // theElememtTheListenerWasAttachedTo.removeEventListener("particular listend to action", storedForLaterListenerRemoval);
             // Partner piece for the code above.  Same link: https://stackoverflow.com/questions/256754/how-to-pass-arguments-to-addeventlistener-listener-function/54731362#54731362
 
             // The following ignore the facility to remove them later.
-            addListenerWithArguments(document.getElementById("ActivatingButton"),"mousedown",myReaction,"There has been a press of the mouse button on the element.");
-            addListenerWithArguments(document.getElementById("ActivatingButton"),"mouseup",myReaction,"There has been a lift of the mouse button on the element.");
-            //addListenerWithArguments(document.getElementById("ActivatingButton"),"mouseleave",myReaction,"There has been a lift of the mouse button on the element.");
-            //addListenerWithArguments(document.getElementById("ActivatingButton"),"mouseenter",myReaction,"There has been a lift of the mouse button on the element.");
+            addListenerWithArguments(document.getElementById(myElementOfInterest),"mousedown",myReaction,"There has been a press of the mouse button on the element.");
+            addListenerWithArguments(document.getElementById(myElementOfInterest),"mouseup",myReaction,"There has been a lift of the mouse button on the element.");
+            addListenerWithArguments(document.getElementById(myElementOfInterest),"mouseenter",myReaction,"The mouse has entered the zone.");
+            addListenerWithArguments(document.getElementById(myElementOfInterest),"mouseleave",myReaction,"The mouse has left the zone.");
+            addListenerWithArguments(document.getElementById(myElementOfInterest),"mousemove",myReaction,"The mouse has moved in the zone.");
         </script>
 
     </body>
