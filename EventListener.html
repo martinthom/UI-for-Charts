@@ -8,27 +8,45 @@
         <!-- HTML HTML HTML -->
         <!-- HTML HTML HTML -->
         <!-- HTML HTML HTML -->
-        <!-- It seems to me good practice to keep all the HTML elements together and away from the fancy JavaScript. -->
+        <!-- It seems to me to be good practice to keep all the HTML elements together and away from the fancy JavaScript. -->
         <!-- So I've got them up here first. -->
         <!-- MAKE NO ATTEMPT TO STYLE THINGS beyond simple new lines (breaks) headings and pragraphs. -->
-        <h1>Tests involving listening to events.</h1> <!-- Appears bang on top left (unless I change the css in future) -->
+        <h1>Tests involving listening to events.</h1> <!-- Appears bang on top left (unless I change the css in future).  Don't try to centre here - do that in CSS. -->
         <p>Were you looking for the <a href="MyPage.html" title="go to the Main Page">other page</a>?</p>
         <h2>Updating Paragraphs</h2>
-        <p>This is a paragraph part of which will update.  The status: <span id = "DynamicStatusParagraph">This text will change.</span></p>
+        <p>This is a paragraph part of which will update when the mouse hits the box below.<br><span id = "DynamicStatusParagraph">This text will change.</span></p>
         <div id = "AreaOfInterest">
             <h3>Heading 3 text that has been placed in a div.</h3>
             <p> Where it has been followed by a paragraph.<br><br>
                 <!-- The metric names incorporate the actual trigger name. -->
-                Mouse Over <span id = metricmouseover>(waiting)</span> <br>
-                Mouse Down <span id = metricmousedown>(waiting)</span> <br>
-                Mouse Up <span id = metricmouseup>(waiting)</span> <br>
-                Mouse Enter <span id = metricmouseenter>(waiting)</span> <br>
-                Mouse Leave <span id = metricmouseleave>(waiting)</span> <br>
-                Mouse Move <span id = metricmousemove>(waiting)</span> <br>
+                <!-- There is a listener below for every line here. -->
+                Mouse Click Down <span id = metric_mousedown>(waiting)</span> <br> <!-- Counts left, right and aux presses. -->
+                Mouse Click Release <span id = metric_mouseup>(waiting)</span> <br> <!-- Counts left, right and aux releases. -->
+                Mouse Click <span id = metric_click>(waiting)</span> <br> <!-- Does NOT record double clicks.  -->
+                Mouse Double Click <span id = metric_dblclick>(waiting)</span> <br> <!-- Double right/aux clicks are not a thing. Only counts left clicks. -->
+                Mouse Right Click <span id = metric_contextmenu>(waiting)</span> <br> <!-- A right click is registered on release only. -->
+                <!-- Note that with the pen: it records a right click if the aux button is pressed before a quick stab. -->
+                Auxiliary Click <span id = metric_auxclick>(waiting)</span> <br>
+                <!-- Note that a right click is classed as an auxiliary click too. -->
+                <!-- Clicking the wheel on a mouse is an AUX click.-->
+                Wheel Movement <span id = metric_wheel>(waiting)</span> <br>
+                <!-- The mouse wheel move is quantised into something that matches the feel of using the wheel. -->
+                Mouse Enter Zone <span id = metric_mouseenter>(waiting)</span> <br>
+                Mouse Leave Zone <span id = metric_mouseleave>(waiting)</span> <br>
+                Mouse Over Element <span id = metric_mouseover>(waiting)</span> <br>
+                Mouse Out of Element <span id = metric_mouseout>(waiting)</span> <br>
+                Mouse Move in Zone <span id = metric_mousemove>(waiting)</span> <br>
             </p>
         </div>
-        <p>Mouse Over will trigger on every element it finds within the element that it's
-            watching, so that includes the children.  Whereas Mouse Enter and Leave only deal with the parent element.</p>
+        <p>
+            Mouse Over will trigger on every element it finds within the element that it's
+            watching, so that includes the children.  Whereas Mouse Enter and Leave only deal
+            with the parent element.  Note that the pen will trigger most things.  Curiously
+            the pen works for Over, Enter, Leave and Move but has a strange reaction with down
+            and up.  It seems a quick press of the screen and release is classed as a down followed
+            quickly by an up.  But if the pen is pressed on the screen and held then no down or up
+            is registered!  Pressing the aux button before a stab will register a right click.
+        </p>
         <br>
         <h2>Clicking a button that makes changes (even to the button itself!).</h2>
         <p id = "DynamicClickParagraph">This paragraph will be changed by clicking.</p>
@@ -46,7 +64,7 @@
         <!-- Local override to the loaded CSS. -->
         <style>
             div {
-                width: 200px;
+                width: 250px;
                 height: 100%;
                 border: 1px solid black;
                 margin: 10px;
@@ -57,6 +75,9 @@
             }
             h3 {
                 background-color: white;
+            }
+            #DynamicStatusParagraph {
+                font-size: 10mm;
             }
         </style>
 
@@ -115,7 +136,7 @@
                 triggerReason == "mousemove"? /*nothing*/null:document.getElementById("DynamicStatusParagraph").innerHTML = triggerWords;
 
                 myCounters.has(triggerReason) ? myCounters.set(triggerReason,myCounters.get(triggerReason) + 1): myCounters.set(triggerReason,1);
-                document.getElementById("metric"+triggerReason).innerHTML = myCounters.get(triggerReason);
+                document.getElementById("metric_"+triggerReason).innerHTML = myCounters.get(triggerReason);
 
             }
         </script>
@@ -129,12 +150,24 @@
             // theElememtTheListenerWasAttachedTo.removeEventListener("particular listend to action", storedForLaterListenerRemoval);
             // Partner piece for the code above.  Same link: https://stackoverflow.com/questions/256754/how-to-pass-arguments-to-addeventlistener-listener-function/54731362#54731362
 
-            // The following ignore the facility to remove them later.
+            // The following ignore the facility to remove them later (ie don't bother with the return value like the one above).
             addListenerWithArguments(document.getElementById(myElementOfInterest),"mousedown",myReaction,"There has been a press of the mouse button on the element.");
             addListenerWithArguments(document.getElementById(myElementOfInterest),"mouseup",myReaction,"There has been a lift of the mouse button on the element.");
             addListenerWithArguments(document.getElementById(myElementOfInterest),"mouseenter",myReaction,"The mouse has entered the zone.");
             addListenerWithArguments(document.getElementById(myElementOfInterest),"mouseleave",myReaction,"The mouse has left the zone.");
-            addListenerWithArguments(document.getElementById(myElementOfInterest),"mousemove",myReaction,"The mouse has moved in the zone.");
+            addListenerWithArguments(document.getElementById(myElementOfInterest),"mousemove",myReaction,"The mouse has moved off an element.");
+            addListenerWithArguments(document.getElementById(myElementOfInterest),"mouseout",myReaction,"The mouse has moved in the zone.");
+            addListenerWithArguments(document.getElementById(myElementOfInterest),"contextmenu",myReaction,"The right mouse button has been pressed.");
+            addListenerWithArguments(document.getElementById(myElementOfInterest),"dblclick",myReaction,"There has been a double-click.");
+            addListenerWithArguments(document.getElementById(myElementOfInterest),"click",myReaction,"There has been a click.");
+            addListenerWithArguments(document.getElementById(myElementOfInterest),"auxclick",myReaction,"There has been an auxilliary click.");
+            addListenerWithArguments(document.getElementById(myElementOfInterest),"wheel",myReaction,"There has been a wheel move (direction unknown).");
+            // The following are ones I could not get to work with this DIV element.
+            //addListenerWithArguments(document.getElementById(myElementOfInterest),"focus",myReaction,"The element has received focus.");
+            //addListenerWithArguments(document.getElementById(myElementOfInterest),"blur",myReaction,"The element has lost focus.");
+            //addListenerWithArguments(document.getElementById(myElementOfInterest),"resize",myReaction,"The page was resized.");
+            //addListenerWithArguments(document.getElementById(myElementOfInterest),"scroll",myReaction,"The page scrolled.");
+            // See: https://developer.mozilla.org/en-US/docs/Web/Events
         </script>
 
     </body>
