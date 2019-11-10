@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="MyStyle.css"> <!-- The style sheet IS referenced (for the non-Highcharts at least). -->
+        <title>Map Experiments</title> <!-- appears in the tab of the browser (tested with Chrome) -->
+
+        <!-- Now bring in the HighCharts library (javascript) -->
+        <script src="./ProjectionUtils/proj4.js"></script> <!-- This utility (see link below) is needed for Lat Long work. -->
+        <script src="./Highcharts/Highmaps-7.2.1/code/highmaps.js"></script>
+        <script src="./Maps/gb-all.js"></script>
+        <script src="./Maps/np-all.js"></script>
+        <!--
+            See the website: https://code.highcharts.com/mapdata/
+            <script src="https://code.highcharts.com/mapdata/countries/np/np-all.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.4.4/proj4.js"></script>  Needed for the LatLong work
+        -->
+    </head>
+    <body>
+        <h1>BodyTitle</h1> <!-- Appears bang on top left (unless I change the css in future) -->
+        <p>Were you looking for the <a href="MyPage.html" title="go to the Main Page">main page</a>?</p>
+        <p>This is a really interesting paragraph.</p> <!-- A piece of HTML for old-times sake. -->
+        <div id = "myPlaceholderUK"></div>
+        <div id = "myPlaceholderNepal"></div>
+        <!-- This is the last of the HTML.-->
+        <!-- This is the last of the HTML.-->
+        <!-- This is the last of the HTML.-->
+
+        <!-- Now we get into the demo Javascript -->
+        <!-- Now we get into the demo Javascript -->
+        <!-- Now we get into the demo Javascript -->
+
+        <!-- The HighMaps API is here:  https://api.highcharts.com/highmaps/#  -->
+
+        <script>
+            var chart = Highcharts.mapChart('myPlaceholderNepal', {
+                title: {  text: 'Nepal'  },
+
+                series: [{
+                    // Use the np-all map with no data as a basemap
+                    mapData: Highcharts.maps['countries/np/np-all'],
+                    name: 'Basemap',
+                    borderColor: '#707070',
+                    nullColor: 'rgba(200, 200, 200, 0.3)',
+                    showInLegend: false
+                }]
+            });
+        </script>
+
+        <script>
+            // Use id instead of name to allow for referencing points later using chart.get
+            var notableCities =  [{
+                        id: 'London',
+                        lat: 51.507222,
+                        lon: -0.1275
+                    }, {
+                        id: 'Birmingham',
+                        lat: 52.483056,
+                        lon: -1.893611
+                    }, {
+                        id: 'Leeds',
+                        lat: 53.799722,
+                        lon: -1.549167
+                    }, {
+                        id: 'Glasgow',
+                        lat: 55.858,
+                        lon: -4.259
+                    }, {
+                        id: 'Sheffield',
+                        lat: 53.383611,
+                        lon: -1.466944
+                    }, {
+                        id: 'Liverpool',
+                        lat: 53.4,
+                        lon: -3
+                    }, {
+                        id: 'Bristol',
+                        lat: 51.45,
+                        lon: -2.583333
+                    }, {
+                        id: 'Belfast',
+                        lat: 54.597,
+                        lon: -5.93
+                    }, {
+                        id: 'Lerwick',
+                        lat: 60.155,
+                        lon: -1.145,
+                        dataLabels: { // This is an override to the label but just for this point.
+                            align: 'left',
+                            x: 5,
+                            verticalAlign: 'middle'
+                        }
+                    }]; 
+        </script>
+
+
+        <script>
+            // The variable 'chart' is going to be huge!
+            // It's the result of a call to mapChart passing the id of the DIV and a MAP (not the GEO kind).
+            var chart = Highcharts.mapChart('myPlaceholderUK', {
+
+                title: {  text: 'Highmaps simple flight routes demo'  },
+                legend: {  align: 'left',   layout: 'vertical',   floating: true  },
+                mapNavigation: { enabled: true  },
+            
+                tooltip: {
+                    formatter: function () {
+                        return this.point.id + (this.point.lat ? '<br>Lat: ' + this.point.lat + ' Lon: ' + this.point.lon : '' );
+                    }
+                },
+            
+                plotOptions: {
+                    series: {
+                        marker: {
+                            fillColor: '#FFFFFF',
+                            lineWidth: 2,
+                            lineColor: Highcharts.getOptions().colors[1]
+                        }
+                    }
+                },
+            
+                series: [{
+                    // Use the gb-all map with no data as a basemap
+                    mapData: Highcharts.maps['countries/gb/gb-all'],
+                    name: 'Basemap',
+                    borderColor: '#707070', // Octal for the colour of the lines.
+                    nullColor: 'rgba(200, 200, 200, 0.3)', // The colour to fill the country with.
+                    showInLegend: false
+                }, {
+                    name: 'Separators',
+                    type: 'mapline',
+                    data: Highcharts.geojson(Highcharts.maps['countries/gb/gb-all'], 'mapline'),
+                    color: '#707070', // Octal for the colour of the separator between Mainland and Shetland
+                    showInLegend: false,
+                    enableMouseTracking: false
+                }, {
+                    // Specify cities using lat/lon
+                    type: 'mappoint',
+                    name: 'Cities',
+                    dataLabels: { format: '{point.id}' },
+                    data: notableCities
+                }]
+            });
+            
+            // Function to return an SVG path between two points, with an arc
+            // See https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths#:~:targetText=The%20element%20is%20the,can%20be%20created%20as%20polylines.
+            function pointsToPath(from, to, invertArc) {
+                var arcPointX = (from.x + to.x) / (invertArc ? 2.4 : 1.6),
+                    arcPointY = (from.y + to.y) / (invertArc ? 2.4 : 1.6);
+                return 'M' + from.x + ',' + from.y + 'Q' + arcPointX + ' ' + arcPointY +
+                        ',' + to.x + ' ' + to.y;
+            }
+            
+            var londonPoint = chart.get('London'),
+                lerwickPoint = chart.get('Lerwick');
+            
+            // Add a series of lines for London
+            chart.addSeries({
+                name: 'London flight routes',
+                type: 'mapline',
+                lineWidth: 2,
+                color: Highcharts.getOptions().colors[3],
+                data: [{
+                    id: 'London - Glasgow',
+                    className: 'LondonFlight',
+                    path: pointsToPath(londonPoint, chart.get('Glasgow'))
+                }, {
+                    id: 'London - Belfast',
+                    path: pointsToPath(londonPoint, chart.get('Belfast'), true)
+                }, {
+                    id: 'London - Leeds',
+                    path: pointsToPath(londonPoint, chart.get('Leeds'))
+                }, {
+                    id: 'London - Liverpool',
+                    path: pointsToPath(londonPoint, chart.get('Liverpool'), true)
+                }, {
+                    id: 'London - Sheffield',
+                    path: pointsToPath(londonPoint, chart.get('Sheffield'))
+                }, {
+                    id: 'London - Birmingham',
+                    path: pointsToPath(londonPoint, chart.get('Birmingham'), true)
+                }, {
+                    id: 'London - Bristol',
+                    path: pointsToPath(londonPoint, chart.get('Bristol'), true)
+                }]
+            });
+            
+            // Add a series of lines for Lerwick
+            chart.addSeries({
+                name: 'Lerwick flight routes',
+                type: 'mapline',
+                lineWidth: 2,
+                color: Highcharts.getOptions().colors[5],
+                data: [{
+                    id: 'Lerwick - Glasgow',
+                    path: pointsToPath(lerwickPoint, chart.get('Glasgow'))
+                }, {
+                    id: 'Lerwick - Belfast',
+                    path: pointsToPath(lerwickPoint, chart.get('Belfast'))
+                }, {
+                    id: 'Lerwick - Leeds',
+                    path: pointsToPath(lerwickPoint, chart.get('Leeds'))
+                }, {
+                    id: 'Lerwick - Liverpool',
+                    path: pointsToPath(lerwickPoint, chart.get('Liverpool'))
+                }]
+            });
+        </script>
+        <!-- Trying (below) and failing to style one of the HighMaps elements. -->
+        <style> 
+            .highcharts-series-2 { /* Series 2 seems to be the class of the names of the cities. */
+                fill: #0ff; /* White text. */
+                stroke: #00f; /* White text. */
+            }
+            .LondonFlight { /* I added in my own classname and it seems to work WONDERFULLY! */
+                stroke-width: 5px; /* This does make the width of the lines for one Londond Flight Route wider.  */
+                stroke-dasharray: 10, 15; /* This does dash the flight line. */
+                stroke-dashoffset: 25; 
+                animation: lineMove 1s linear infinite;
+            }
+            @keyframes lineMove {
+                to {
+                    stroke-dashoffset: 0;
+                }
+            }
+        </style>
+    </body>
+</html>
